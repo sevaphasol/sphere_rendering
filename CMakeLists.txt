@@ -11,7 +11,8 @@ pkg_check_modules(SFML REQUIRED IMPORTED_TARGET sfml-graphics sfml-window sfml-s
 set(SOURCE_DIR source)
 set(INCLUDE_DIR include)
 
-file(GLOB SOURCE_FILES ${SOURCE_DIR}/*.cpp)
+file( GLOB_RECURSE SOURCE_FILES ${SOURCE_DIR}/*.cpp
+								${SOURCE_DIR}/**/*.cpp )
 
 add_executable(sphere-rendering ${SOURCE_FILES})
 
