@@ -6,14 +6,15 @@ Checks: >
   -readability-magic-numbers,
   -readability-function-cognitive-complexity,
   -readability-redundant-access-specifiers,
-  -readability-math-missing-parentheses
+  -readability-math-missing-parentheses,
+  -readability-uppercase-literal-suffix,
 CheckOptions:
   - { key: readability-identifier-naming.NamespaceCase,           value: lower_case }
   - { key: readability-identifier-naming.ClassCase,               value: CamelCase  }
   - { key: readability-identifier-naming.StructCase,              value: CamelCase  }
-  - { key: readability-identifier-naming.FunctionCase,            value: lowerCamelCase  }
-  - { key: readability-identifier-naming.MethodCase,              value: upperCamelCase  }
-  - { key: readability-identifier-naming.ClassMethodCase,         value: upperCamelCase  }
+  - { key: readability-identifier-naming.FunctionCase,            value: PascalCase  }
+  - { key: readability-identifier-naming.MethodCase,              value: PascalCase  }
+  - { key: readability-identifier-naming.ClassMethodCase,         value: PascalCase  }
   - { key: readability-identifier-naming.MemberCase,              value: lower_case }
   - { key: readability-identifier-naming.ClassMemberCase,         value: lower_case }
   - { key: readability-identifier-naming.ClassConstantCase,       value: CamelCase  }

@@ -2,19 +2,19 @@
 
 namespace geometry {
 
-Sphere::Sphere( const Vector& center, float radius ) : center( center ), radius( radius ) {}
+Sphere::Sphere( const Vector& center, float radius, const sf::Color& color )
+    : center( center ), radius( radius ), color( color ) {};
 
 bool
-Sphere::lineDoesIntersect( const Line& line ) const
+Sphere::LineDoesIntersect( const Line& line ) const
 {
-    return line.getDistance( center ) <= radius;
+    return line.GetDistance( center ) <= radius;
 }
 
-// Call only if raIntersect == true
 Vector
-Sphere::getIntersectionWithRay( const Line& line ) const
+Sphere::GetIntersectionWithLine( const Line& line ) const
 {
-    if ( !lineDoesIntersect( line ) )
+    if ( !LineDoesIntersect( line ) )
     {
         return { NAN, NAN, NAN };
     }
@@ -24,10 +24,10 @@ Sphere::getIntersectionWithRay( const Line& line ) const
     Vector a   = line.direction;
     Vector b   = cam - sph;
 
-    float a_len = a.getLen();
-    float b_len = b.getLen();
+    float a_len = a.GetLen();
+    float b_len = b.GetLen();
 
-    float cos_phi    = ( a * b ) / ( a_len * b_len );
+    float cos_phi    = ( a, b ) / ( a_len * b_len );
     float cos_phi_sq = cos_phi * cos_phi;
 
     float b_len_sq  = b_len * b_len;

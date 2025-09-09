@@ -20,7 +20,10 @@ target_include_directories(sphere-rendering PRIVATE ${INCLUDE_DIR})
 
 set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}")
 
-target_link_libraries(sphere-rendering PkgConfig::SFML)
+target_link_libraries(sphere-rendering PRIVATE PkgConfig::SFML)
+
+find_package(OpenMP REQUIRED)
+target_link_libraries(sphere-rendering PRIVATE OpenMP::OpenMP_CXX)
 
 target_include_directories(sphere-rendering PRIVATE src)
 

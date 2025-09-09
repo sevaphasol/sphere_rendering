@@ -9,7 +9,7 @@ class Line {
     Line( const Vector& direction, const Vector& base_point );
 
     float
-    getDistance( const Vector& point ) const;
+    GetDistance( const Vector& point ) const;
 
     Vector direction;
     Vector base_point;

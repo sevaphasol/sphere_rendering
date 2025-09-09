@@ -1,15 +1,15 @@
-#include "render/render.hpp"
-#include "render/config.hpp"
+#include <SFML/Graphics/Color.hpp>
+#include "render/renderer.hpp"
 
 int
 main()
 {
-    render::Screen screen;
+    render::Renderer renderer;
 
-    screen.AddLight( render::config::Lights[0] );
-    screen.AddSphere( render::config::Spheres[0] );
+    renderer.AddLight( 3, 3, 5, 0.2f );
+    renderer.AddSphere( 0, 0, 10, 2, sf::Color( 32, 32, 32 ) );
 
-    screen.Run();
+    renderer.Run();
 
     return 0;
 }

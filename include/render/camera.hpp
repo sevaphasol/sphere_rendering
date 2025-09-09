@@ -1,5 +1,7 @@
 #pragma once
 
+#include <SFML/Graphics.hpp>
+
 #include "geometry/vector.hpp"
 #include "geometry/line.hpp"
 
@@ -10,10 +12,10 @@ class Camera {
     Camera( const geometry::Vector& pos, float fov );
 
     geometry::Line
-    PixelToViewRay( uint row, uint col, uint height, uint width ) const;
+    TraceRay( uint px_y, uint px_x, uint scr_height, uint scr_width ) const;
 
-    float            fov;
     geometry::Vector pos;
+    float            fov;
 };
 
 } // namespace render

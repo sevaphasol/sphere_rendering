@@ -9,18 +9,19 @@ namespace geometry {
 
 class Sphere {
   public:
-    Sphere( const Vector& center, float radius );
+    Sphere( const Vector& center, float radius, const sf::Color& color );
 
-    bool
-    lineDoesIntersect( const Line& line ) const;
-
-    // Call only if raIntersect == true
     Vector
-    getIntersectionWithRay( const Line& line ) const;
+    GetIntersectionWithLine( const Line& line ) const;
 
-    const sf::Color color = { 32, 4, 4 };
-    Vector          center;
-    float           radius;
+  private:
+    bool
+    LineDoesIntersect( const Line& line ) const;
+
+  public:
+    sf::Color color;
+    Vector    center;
+    float     radius;
 };
 
 } // namespace geometry

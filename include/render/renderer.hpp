@@ -11,37 +11,28 @@
 
 namespace render {
 
-class Screen {
+class Renderer {
   public:
-    Screen();
+    Renderer();
 
     void
     Run();
 
     void
-    AddLight( const Light& light );
+    AddLight( float x, float y, float z, float intensity );
 
     void
-    AddSphere( const geometry::Sphere& sphere );
+    AddSphere( float x, float y, float z, float radius, const sf::Color& color );
 
   private:
     void
     HandleEvents();
 
-    static float
-    getDiffuseLightDep( geometry::Vector& normal, geometry::Vector& light_ray, float intensity );
-
-    static float
-    getGlareLightDep( geometry::Vector& normal,
-                      geometry::Vector& view,
-                      geometry::Vector& light_ray,
-                      float             intensity );
+    sf::Color
+    GetLightsDep( const geometry::Vector& point );
 
     sf::Color
-    getLightsDep( const geometry::Vector& point );
-
-    sf::Color
-    calcPixelColor( uint row, uint col );
+    CalcPixelColor( uint row, uint col );
 
     void
     Render();

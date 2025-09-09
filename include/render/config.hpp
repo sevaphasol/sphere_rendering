@@ -3,25 +3,18 @@
 #include <sys/types.h>
 #include <SFML/Graphics.hpp>
 
-#include "geometry/vector.hpp"
-
-#include "render/light.hpp"
-#include "geometry/sphere.hpp"
-
 namespace render {
-namespace config {
 
-const char* const Title        = "SphereRendering";
-constexpr uint    WindowWidth  = 1000.0F;
-constexpr uint    WindowHeight = 1000.0F;
+class Config {
+  public:
+    static constexpr const char* const Title        = "SphereRendering";
+    static constexpr uint              WindowWidth  = 1200.0f;
+    static constexpr uint              WindowHeight = 800.0f;
+    static constexpr float             CameraFov    = 1.05;
+    static constexpr float             WasdScale    = 0.1f;
+    static const sf::Color             BackgroundColor;
+};
 
-const float CameraFov = 1.05;
+inline const sf::Color Config::BackgroundColor = sf::Color( 16, 16, 16 );
 
-const sf::Color BackgroundColor = sf::Color::Magenta;
-
-const render::Light Lights[] = { render::Light( { 3, 3, 4.5F }, 0.2 ) };
-
-const geometry::Sphere Spheres[] = { geometry::Sphere( { 0, 0, 10 }, 2 ) };
-
-} // namespace config
 } // namespace render

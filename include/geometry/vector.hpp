@@ -9,16 +9,13 @@ class Vector {
     Vector( float x, float y, float z );
 
     bool
-    isValid() const;
+    Valid() const;
 
     float
-    getLen() const;
+    GetLen() const;
 
     float
-    getCos( const Vector& that ) const;
-
-    float
-    operator&&( const Vector& that ) const;
+    operator,( const Vector& that ) const;
 
     Vector
     operator+( const Vector& that ) const;
@@ -26,8 +23,11 @@ class Vector {
     Vector
     operator-( const Vector& that ) const;
 
-    float
-    operator*( const Vector& that ) const;
+    void
+    operator+=( const Vector& that );
+
+    void
+    operator-=( const Vector& that );
 
     Vector
     operator+( float scalar ) const;
@@ -41,9 +41,24 @@ class Vector {
     void
     operator+=( float scalar );
 
+    void
+    operator-=( float scalar );
+
+    void
+    operator*=( float scalar );
+
     float x;
     float y;
     float z;
 };
+
+float
+CalcCos( const Vector& v1, const Vector& v2 );
+
+float
+CalcSin( const Vector& v1, const Vector& v2 );
+
+float
+CalcVecMulModule( const Vector& v1, const Vector& v2 );
 
 } // namespace geometry

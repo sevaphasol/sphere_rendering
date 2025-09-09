@@ -5,12 +5,12 @@ namespace render {
 Camera::Camera( const geometry::Vector& pos, float fov ) : fov( fov ), pos( pos ) {}
 
 geometry::Line
-Camera::PixelToViewRay( uint row, uint col, uint height, uint width ) const
+Camera::TraceRay( uint px_y, uint px_x, uint scr_height, uint scr_width ) const
 {
-    float x = ( 2 * ( col + 0.5 ) / (float)width - 1 ) * tan( fov / 2. ) * width / (float)height;
-    float y = -( 2 * ( row + 0.5 ) / (float)height - 1 ) * tan( fov / 2. );
+    float x = ( 2 * ( ( px_x + 0.5 ) / scr_width ) - 1 );
+    float y = ( 2 * ( ( px_y + 0.5 ) / scr_height ) - 1 ) * ( float( scr_height ) / scr_width );
 
-    return geometry::Line( { x, y, -1 }, pos );
+    return geometry::Line( geometry::Vector( x, -y, -1 ) - pos, pos );
 }
 
 } // namespace render

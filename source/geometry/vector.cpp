@@ -1,67 +1,73 @@
 #include "geometry/vector.hpp"
 
-#pragma once
-
-#include <cmath>
-
 namespace geometry {
 
 Vector::Vector( float x, float y, float z ) : x( x ), y( y ), z( z ) {}
 
 bool
-Vector::isValid() const
+Vector::Valid() const
 {
     return !( std::isnan( x ) || std::isnan( y ) || std::isnan( z ) );
 }
 
 float
-Vector::getLen() const
+Vector::GetLen() const
 {
     return sqrt( ( x * x ) + ( y * y ) + ( z * z ) );
 }
 
 float
-Vector::getCos( const Vector& that ) const
+Vector::operator,( const Vector& that ) const
 {
-    return ( *this * that ) / ( getLen() * that.getLen() );
+    return ( this->x * that.x ) + ( this->y * that.y ) + ( this->z * that.z );
 }
 
-// Module of vectorMul
-float
-Vector::operator&&( const Vector& that ) const
-{
-    return getLen() * that.getLen() * sin( acos( getCos( that ) ) );
-}
-
-// Sum of vectors
 Vector
 Vector::operator+( const Vector& that ) const
 {
     return { this->x + that.x, this->y + that.y, this->z + that.z };
 }
 
-// Sub of vectors
 Vector
 Vector::operator-( const Vector& that ) const
 {
     return { this->x - that.x, this->y - that.y, this->z - that.z };
 }
 
-// Scalar mul of vectors
-float
-Vector::operator*( const Vector& that ) const
+void
+Vector::operator+=( const Vector& that )
 {
-    return ( this->x * that.x ) + ( this->y * that.y ) + ( this->z * that.z );
+    this->x += that.x;
+    this->y += that.y;
+    this->z += that.z;
 }
 
-// Sum vector on scalar
+void
+Vector::operator-=( const Vector& that )
+{
+    this->x -= that.x;
+    this->y -= that.y;
+    this->z -= that.z;
+}
+
 Vector
 Vector::operator+( float scalar ) const
 {
-    return { this->x + scalar, this->y + scalar, this->z + scalar };
+    return Vector( this->x + scalar, this->y + scalar, this->z + scalar );
 }
 
-// Sum vector on scalar
+Vector
+Vector::operator-( float scalar ) const
+{
+    return Vector( this->x - scalar, this->y - scalar, this->z - scalar );
+}
+
+Vector
+Vector::operator*( float scalar ) const
+{
+    return Vector( this->x * scalar, this->y * scalar, this->z * scalar );
+}
+
 void
 Vector::operator+=( float scalar )
 {
@@ -70,18 +76,38 @@ Vector::operator+=( float scalar )
     this->z += scalar;
 }
 
-// Sub vector on scalar
-Vector
-Vector::operator-( float scalar ) const
+void
+Vector::operator-=( float scalar )
 {
-    return { this->x - scalar, this->y - scalar, this->z - scalar };
+    this->x -= scalar;
+    this->y -= scalar;
+    this->z -= scalar;
 }
 
-// Mul vector on scalar
-Vector
-Vector::operator*( float scalar ) const
+void
+Vector::operator*=( float scalar )
 {
-    return { this->x * scalar, this->y * scalar, this->z * scalar };
+    this->x *= scalar;
+    this->y *= scalar;
+    this->z *= scalar;
+}
+
+float
+CalcCos( const Vector& v1, const Vector& v2 )
+{
+    return ( v1, v2 ) / ( v1.GetLen() * v2.GetLen() );
+}
+
+float
+CalcSin( const Vector& v1, const Vector& v2 )
+{
+    return sin( acos( CalcCos( v1, v2 ) ) );
+}
+
+float
+CalcVecMulModule( const Vector& v1, const Vector& v2 )
+{
+    return v1.GetLen() * v2.GetLen() * CalcSin( v1, v2 );
 }
 
 } // namespace geometry
