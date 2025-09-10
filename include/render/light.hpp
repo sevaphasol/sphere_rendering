@@ -23,9 +23,9 @@ class Light {
                      const geometry::Vector& normal,
                      const geometry::Vector& view ) const;
 
-  public:
-    geometry::Vector position;
-    float            intensity;
+  private:
+    geometry::Vector pos_;
+    float            intensity_;
 };
 
 geometry::Vector

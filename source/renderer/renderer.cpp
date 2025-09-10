@@ -1,5 +1,7 @@
 #include "render/renderer.hpp"
+#include "geometry/vector.hpp"
 #include "render/config.hpp"
+#include <iostream>
 
 namespace render {
 
@@ -47,29 +49,38 @@ Renderer::HandleEvents()
         }
     }
 
-    int left     = int( sf::Keyboard::isKeyPressed( sf::Keyboard::A ) );
-    int right    = int( sf::Keyboard::isKeyPressed( sf::Keyboard::D ) );
-    int forward  = int( sf::Keyboard::isKeyPressed( sf::Keyboard::W ) );
-    int backward = int( sf::Keyboard::isKeyPressed( sf::Keyboard::S ) );
+    int move_left     = int( sf::Keyboard::isKeyPressed( sf::Keyboard::A ) );
+    int move_right    = int( sf::Keyboard::isKeyPressed( sf::Keyboard::D ) );
+    int move_forward  = int( sf::Keyboard::isKeyPressed( sf::Keyboard::W ) );
+    int move_backward = int( sf::Keyboard::isKeyPressed( sf::Keyboard::S ) );
+    int move_up       = int( sf::Keyboard::isKeyPressed( sf::Keyboard::Space ) );
+    int move_down     = int( sf::Keyboard::isKeyPressed( sf::Keyboard::LShift ) );
+    int turn_left     = int( sf::Keyboard::isKeyPressed( sf::Keyboard::Left ) );
+    int turn_right    = int( sf::Keyboard::isKeyPressed( sf::Keyboard::Right ) );
+    int turn_up       = int( sf::Keyboard::isKeyPressed( sf::Keyboard::Up ) );
+    int turn_down     = int( sf::Keyboard::isKeyPressed( sf::Keyboard::Down ) );
 
-    camera_.pos.x += ( left - right ) * Config::WasdScale;
-    camera_.pos.z += ( forward - backward ) * Config::WasdScale;
+    camera_.Move( camera_.GetHorOrt() * ( move_right - move_left ) * Config::MoveScale +
+                  camera_.GetVerOrt() * ( move_up - move_down ) * Config::MoveScale +
+                  camera_.GetFwdOrt() * ( move_forward - move_backward ) * Config::MoveScale *
+                      ( -1 ) );
+    camera_.Rotate( ( turn_right - turn_left ) * Config::RotateScale,
+                    ( turn_up - turn_down ) * Config::RotateScale );
 }
 
 sf::Color
-Renderer::GetLightsDep( const geometry::Vector& point )
+Renderer::CalcLightsLumacy( const geometry::Vector& point, const geometry::Vector& normal )
 {
-    geometry::Vector lights_dep = { 0, 0, 0 };
-    geometry::Vector normal     = point - spheres_[0].center;
+    float lights_dep = 0;
 
     for ( const auto& light : lights_ )
     {
-        lights_dep += light.CalcLumacy( point - camera_.pos, point, normal );
+        lights_dep += light.CalcLumacy( point - camera_.GetPos(), point, normal );
     }
 
-    return { sf::Uint8( std::clamp( lights_dep.x * 255.f, 0.f, 255.f ) ),
-             sf::Uint8( std::clamp( lights_dep.y * 255.f, 0.f, 255.f ) ),
-             sf::Uint8( std::clamp( lights_dep.z * 255.f, 0.f, 255.f ) ) };
+    sf::Uint8 lumacy = std::clamp( lights_dep * 255.f, 0.f, 255.f );
+
+    return sf::Color( lumacy, lumacy, lumacy );
 }
 
 sf::Color
@@ -77,16 +88,17 @@ Renderer::CalcPixelColor( uint row, uint col )
 {
     const geometry::Line view_ray = camera_.TraceRay( row, col, height_, width_ );
 
-    const geometry::Vector point = spheres_[0].GetIntersectionWithLine( view_ray );
-
-    if ( !point.Valid() )
+    for ( const auto& sphere : spheres_ )
     {
-        return backgorund_color_;
+        const geometry::Vector point = sphere.GetIntersectionWithLine( view_ray );
+
+        if ( point.Valid() )
+        {
+            return sphere.GetColor() + CalcLightsLumacy( point, point - sphere.GetCenter() );
+        }
     }
 
-    sf::Color diffuse_color = GetLightsDep( point );
-
-    return spheres_[0].color + diffuse_color;
+    return backgorund_color_;
 }
 
 void

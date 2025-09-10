@@ -29,7 +29,7 @@ class Renderer {
     HandleEvents();
 
     sf::Color
-    GetLightsDep( const geometry::Vector& point );
+    CalcLightsLumacy( const geometry::Vector& point, const geometry::Vector& normal );
 
     sf::Color
     CalcPixelColor( uint row, uint col );

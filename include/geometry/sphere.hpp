@@ -14,14 +14,23 @@ class Sphere {
     Vector
     GetIntersectionWithLine( const Line& line ) const;
 
+    sf::Color
+    GetColor() const;
+
+    Vector
+    GetCenter() const;
+
+    float
+    GetRadius() const;
+
   private:
     bool
     LineDoesIntersect( const Line& line ) const;
 
-  public:
-    sf::Color color;
-    Vector    center;
-    float     radius;
+  private:
+    sf::Color color_;
+    Vector    center_;
+    float     radius_;
 };
 
 } // namespace geometry

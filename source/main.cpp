@@ -6,8 +6,15 @@ main()
 {
     render::Renderer renderer;
 
-    renderer.AddLight( 3, 3, 5, 0.2f );
-    renderer.AddSphere( 0, 0, 10, 2, sf::Color( 32, 32, 32 ) );
+    renderer.AddLight( 3, 3, 3, 0.5 );
+    renderer.AddSphere( 0, 0, 5, 2, sf::Color( 152, 32, 32 ) );
+
+    // renderer.AddSphere( -1, -1.5, 5, 0.5, sf::Color( 175, 128, 79 ) );
+    // renderer.AddSphere( 0, -1.5, 5, 0.5, sf::Color( 175, 128, 79 ) );
+    // renderer.AddSphere( 1, -1.5, 5, 0.5, sf::Color( 175, 128, 79 ) );
+    // renderer.AddSphere( 0, -0.5, 5, 0.5, sf::Color( 175, 128, 79 ) );
+    // renderer.AddSphere( 0, 0.5, 5, 0.5, sf::Color( 175, 128, 79 ) );
+    // renderer.AddSphere( 0, 1.5, 5, 0.5, sf::Color( 152, 51, 102 ) );
 
     renderer.Run();
 

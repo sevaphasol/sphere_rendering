@@ -6,13 +6,20 @@ namespace geometry {
 
 class Line {
   public:
-    Line( const Vector& direction, const Vector& base_point );
+    Line( const Vector& dir, const Vector& base_point );
 
     float
     GetDistance( const Vector& point ) const;
 
-    Vector direction;
-    Vector base_point;
+    Vector
+    GetDirectionVector() const;
+
+    Vector
+    GetBasePoint() const;
+
+  private:
+    Vector dir_;
+    Vector base_point_;
 };
 
 } // namespace geometry

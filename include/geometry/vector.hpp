@@ -47,9 +47,10 @@ class Vector {
     void
     operator*=( float scalar );
 
-    float x;
-    float y;
-    float z;
+  private:
+    float x_;
+    float y_;
+    float z_;
 };
 
 float
