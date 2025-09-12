@@ -1,21 +1,23 @@
-#include "render/renderer.hpp"
+#include "render/scene_manager.hpp"
 #include "geometry/vector.hpp"
 #include "render/config.hpp"
-#include <iostream>
 
 namespace render {
 
-Renderer::Renderer()
+SceneManager::SceneManager()
     : width_( Config::WindowWidth ), height_( Config::WindowHeight ),
       camera_( { 0, 0, 0 }, Config::CameraFov ),
       window_( sf::VideoMode( Config::WindowWidth, Config::WindowHeight ),
                Config::Title,
                sf::Style::Close ),
       pixels_( Config::WindowWidth * Config::WindowHeight ),
-      backgorund_color_( Config::BackgroundColor ) {};
+      background_color_( Config::BackgroundColor )
+{
+    window_.setFramerateLimit( 60 );
+}
 
 void
-Renderer::Run()
+SceneManager::Run()
 {
     while ( window_.isOpen() )
     {
@@ -26,19 +28,36 @@ Renderer::Run()
 }
 
 void
-Renderer::AddLight( float x, float y, float z, float intensity )
+SceneManager::AddLight( float x,
+                        float y,
+                        float z,
+                        float embedded_intensity,
+                        float diffuse_intensity,
+                        float glare_intensity )
 {
-    lights_.push_back( Light( geometry::Vector( x, y, z ), intensity ) );
+    lights_.push_back( Light( geometry::Vector( x, y, z ),
+                              embedded_intensity,
+                              diffuse_intensity,
+                              glare_intensity ) );
 }
 
 void
-Renderer::AddSphere( float x, float y, float z, float radius, const sf::Color& color )
+SceneManager::AddSphere( float x, float y, float z, float radius, const sf::Color& color )
 {
     spheres_.push_back( geometry::Sphere( geometry::Vector( x, y, z ), radius, color ) );
 }
 
 void
-Renderer::HandleEvents()
+SceneManager::MoveLights( const geometry::Vector& delta )
+{
+    for ( auto& light : lights_ )
+    {
+        light.Move( delta );
+    }
+}
+
+void
+SceneManager::HandleEvents()
 {
     sf::Event event;
     while ( window_.pollEvent( event ) )
@@ -48,6 +67,8 @@ Renderer::HandleEvents()
             window_.close();
         }
     }
+
+    bool move_lights = sf::Keyboard::isKeyPressed( sf::Keyboard::LControl );
 
     int move_left     = int( sf::Keyboard::isKeyPressed( sf::Keyboard::A ) );
     int move_right    = int( sf::Keyboard::isKeyPressed( sf::Keyboard::D ) );
@@ -60,49 +81,64 @@ Renderer::HandleEvents()
     int turn_up       = int( sf::Keyboard::isKeyPressed( sf::Keyboard::Up ) );
     int turn_down     = int( sf::Keyboard::isKeyPressed( sf::Keyboard::Down ) );
 
-    camera_.Move( camera_.GetHorOrt() * ( move_right - move_left ) * Config::MoveScale +
-                  camera_.GetVerOrt() * ( move_up - move_down ) * Config::MoveScale +
-                  camera_.GetFwdOrt() * ( move_forward - move_backward ) * Config::MoveScale *
-                      ( -1 ) );
+    geometry::Vector delta( ( move_right - move_left ),
+                            ( move_up - move_down ),
+                            ( move_forward - move_backward ) );
+
+    delta *= Config::MoveScale;
+
+    if ( move_lights )
+    {
+        MoveLights( delta );
+    } else
+    {
+        camera_.Move( delta );
+    }
+
     camera_.Rotate( ( turn_right - turn_left ) * Config::RotateScale,
                     ( turn_up - turn_down ) * Config::RotateScale );
 }
 
 sf::Color
-Renderer::CalcLightsLumacy( const geometry::Vector& point, const geometry::Vector& normal )
+SceneManager::CalcLights( const geometry::Vector& point,
+                          const geometry::Vector& normal,
+                          const sf::Color&        color )
 {
-    float lights_dep = 0;
+    geometry::Vector sum_light( 0, 0, 0 );
 
     for ( const auto& light : lights_ )
     {
-        lights_dep += light.CalcLumacy( point - camera_.GetPos(), point, normal );
+        sum_light += light.CalcLight( point - camera_.GetPos(), point, normal, color );
     }
 
-    sf::Uint8 lumacy = std::clamp( lights_dep * 255.f, 0.f, 255.f );
+    sum_light.Clamp( 0, 255 );
 
-    return sf::Color( lumacy, lumacy, lumacy );
+    return sf::Color( sum_light.GetX(), sum_light.GetY(), sum_light.GetZ() );
 }
 
 sf::Color
-Renderer::CalcPixelColor( uint row, uint col )
+SceneManager::CalcPixelColor( uint row, uint col )
 {
     const geometry::Line view_ray = camera_.TraceRay( row, col, height_, width_ );
 
+    sf::Color pixel_color = background_color_;
+
     for ( const auto& sphere : spheres_ )
     {
-        const geometry::Vector point = sphere.GetIntersectionWithLine( view_ray );
+        const geometry::Vector point = sphere.GetIntersectionWithDirectedLine( view_ray );
 
         if ( point.Valid() )
         {
-            return sphere.GetColor() + CalcLightsLumacy( point, point - sphere.GetCenter() );
+            pixel_color = CalcLights( point, point - sphere.GetCenter(), sphere.GetColor() );
+            break;
         }
     }
 
-    return backgorund_color_;
+    return pixel_color;
 }
 
 void
-Renderer::Render()
+SceneManager::Render()
 {
 #pragma omp parallel for
     for ( uint row = 0; row < height_; row++ )
@@ -118,7 +154,7 @@ Renderer::Render()
 }
 
 void
-Renderer::Draw()
+SceneManager::Draw()
 {
     window_.clear();
     window_.draw( pixels_.data(), pixels_.size(), sf::Points );

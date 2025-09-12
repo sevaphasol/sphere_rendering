@@ -1,5 +1,6 @@
 #pragma once
 
+#include <SFML/Graphics/Color.hpp>
 #include <cmath>
 
 namespace geometry {
@@ -8,11 +9,28 @@ class Vector {
   public:
     Vector( float x, float y, float z );
 
+    Vector( const sf::Color& color );
+
     bool
     Valid() const;
 
     float
+    GetLenSq() const;
+
+    float
     GetLen() const;
+
+    float
+    GetX() const;
+
+    float
+    GetY() const;
+
+    float
+    GetZ() const;
+
+    void
+    Clamp( float lo, float hi );
 
     float
     operator,( const Vector& that ) const;
@@ -52,6 +70,9 @@ class Vector {
     float y_;
     float z_;
 };
+
+Vector
+operator*( float scalar, const Vector& v );
 
 float
 CalcCos( const Vector& v1, const Vector& v2 );

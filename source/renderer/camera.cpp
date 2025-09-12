@@ -41,7 +41,8 @@ Camera::TraceRay( uint px_y, uint px_x, uint scr_height, uint scr_width ) const
 void
 Camera::Move( const geometry::Vector& delta )
 {
-    pos_ += delta;
+    pos_ +=
+        ( hor_ort_ * delta.GetX() + ver_ort_ * delta.GetY() + fwd_ort_ * delta.GetZ() * ( -1 ) );
 }
 
 geometry::Vector

@@ -1,34 +1,65 @@
 #include "render/light.hpp"
+#include "geometry/vector.hpp"
+#include <iostream>
 
 namespace render {
 
-Light::Light( const geometry::Vector& pos, float intensity )
-    : pos_( pos ), intensity_( intensity ) {};
+Light::Light( const geometry::Vector& pos,
+              float                   embedded_intensity,
+              float                   diffuse_intensity,
+              float                   glare_intensity )
+    : pos_( pos ), embedded_intensity_( embedded_intensity ),
+      diffuse_intensity_( diffuse_intensity ), glare_intensity_( glare_intensity ) {};
 
-float
-Light::CalcLumacy( const geometry::Vector& view,
-                   const geometry::Vector& point,
-                   const geometry::Vector& normal ) const
+void
+Light::Move( const geometry::Vector& delta )
+{
+    pos_ += delta;
+}
+
+geometry::Vector
+Light::CalcLight( const geometry::Vector& view,
+                  const geometry::Vector& point,
+                  const geometry::Vector& normal,
+                  const sf::Color&        color ) const
 {
     geometry::Vector light_ray = point - pos_;
 
-    return CalcDiffuseLumacy( light_ray, normal ) + CalcGlareLumacy( light_ray, normal, view );
+    geometry::Vector embedded_light = CalcEmbeddedLight( color );
+    geometry::Vector diffuse_light =
+        CalcDiffuseLight( light_ray, normal ) * geometry::Vector( 1, 1, 1 );
+    geometry::Vector glare_light =
+        CalcGlareLight( light_ray, normal, view ) * geometry::Vector( 1, 1, 1 );
+
+    return embedded_light + diffuse_light + glare_light;
 }
 
-float
-Light::CalcDiffuseLumacy( const geometry::Vector& light_ray, const geometry::Vector& normal ) const
+geometry::Vector
+Light::CalcEmbeddedLight( const geometry::Vector& color ) const
 {
-    return std::max( 0.0f, intensity_ * -CalcCos( light_ray, normal ) );
+    return color * embedded_intensity_;
 }
 
 float
-Light::CalcGlareLumacy( const geometry::Vector& light_ray,
-                        const geometry::Vector& normal,
-                        const geometry::Vector& view ) const
+Light::CalcDiffuseLight( const geometry::Vector& light_ray, const geometry::Vector& normal ) const
+{
+    float cos       = -CalcCos( light_ray, normal );
+    float intensity = diffuse_intensity_ * cos;
+
+    return std::max( 0.0f, intensity * 255 );
+}
+
+float
+Light::CalcGlareLight( const geometry::Vector& light_ray,
+                       const geometry::Vector& normal,
+                       const geometry::Vector& view ) const
 {
     geometry::Vector reflected_ray = CalcReflectedRay( light_ray, normal );
 
-    return std::max( 0.0f, intensity_ * -CalcCos( view, reflected_ray ) );
+    float cos       = -CalcCos( view, reflected_ray );
+    float intensity = glare_intensity_ * float( std::pow( cos, 11 ) );
+
+    return std::max( 0.0f, intensity * 255 );
 }
 
 geometry::Vector

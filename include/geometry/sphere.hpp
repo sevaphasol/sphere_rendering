@@ -12,7 +12,7 @@ class Sphere {
     Sphere( const Vector& center, float radius, const sf::Color& color );
 
     Vector
-    GetIntersectionWithLine( const Line& line ) const;
+    GetIntersectionWithDirectedLine( const Line& line ) const;
 
     sf::Color
     GetColor() const;

@@ -12,13 +12,15 @@ Sphere::LineDoesIntersect( const Line& line ) const
 }
 
 Vector
-Sphere::GetIntersectionWithLine( const Line& line ) const
+Sphere::GetIntersectionWithDirectedLine( const Line& line ) const
 {
+    const Vector nan_vector( std::numeric_limits<float>::quiet_NaN(),
+                             std::numeric_limits<float>::quiet_NaN(),
+                             std::numeric_limits<float>::quiet_NaN() );
+
     if ( !LineDoesIntersect( line ) )
     {
-        return Vector( std::numeric_limits<float>::quiet_NaN(),
-                       std::numeric_limits<float>::quiet_NaN(),
-                       std::numeric_limits<float>::quiet_NaN() );
+        return nan_vector;
     }
 
     Vector r0  = line.GetBasePoint();
@@ -39,7 +41,7 @@ Sphere::GetIntersectionWithLine( const Line& line ) const
 
     float t = -( b_cos_phi - sqrt( ( b_len_sq * ( cos_phi_sq - 1 ) ) + r_sq ) ) / a_len;
 
-    return r0 + a * t;
+    return ( t > 0 ) ? nan_vector : r0 + a * t;
 }
 
 sf::Color

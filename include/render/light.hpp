@@ -7,25 +7,37 @@ namespace render {
 
 class Light {
   public:
-    Light( const geometry::Vector& position, float intensity );
+    Light( const geometry::Vector& pos,
+           float                   embedded_intensity,
+           float                   diffuse_intensity,
+           float                   glare_intensity );
 
-    float
-    CalcLumacy( const geometry::Vector& view,
-                const geometry::Vector& point,
-                const geometry::Vector& normal ) const;
+    void
+    Move( const geometry::Vector& delta );
+
+    geometry::Vector
+    CalcLight( const geometry::Vector& view,
+               const geometry::Vector& point,
+               const geometry::Vector& normal,
+               const sf::Color&        color ) const;
 
   private:
-    float
-    CalcDiffuseLumacy( const geometry::Vector& light_ray, const geometry::Vector& normal ) const;
+    geometry::Vector
+    CalcEmbeddedLight( const geometry::Vector& color ) const;
 
     float
-    CalcGlareLumacy( const geometry::Vector& light_ray,
-                     const geometry::Vector& normal,
-                     const geometry::Vector& view ) const;
+    CalcDiffuseLight( const geometry::Vector& light_ray, const geometry::Vector& normal ) const;
+
+    float
+    CalcGlareLight( const geometry::Vector& light_ray,
+                    const geometry::Vector& normal,
+                    const geometry::Vector& view ) const;
 
   private:
     geometry::Vector pos_;
-    float            intensity_;
+    float            embedded_intensity_;
+    float            diffuse_intensity_;
+    float            glare_intensity_;
 };
 
 geometry::Vector

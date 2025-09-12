@@ -11,15 +11,20 @@
 
 namespace render {
 
-class Renderer {
+class SceneManager {
   public:
-    Renderer();
+    SceneManager();
 
     void
     Run();
 
     void
-    AddLight( float x, float y, float z, float intensity );
+    AddLight( float x,
+              float y,
+              float z,
+              float embedded_intensity,
+              float diffuse_intensity,
+              float glare_intensity );
 
     void
     AddSphere( float x, float y, float z, float radius, const sf::Color& color );
@@ -28,8 +33,13 @@ class Renderer {
     void
     HandleEvents();
 
+    void
+    MoveLights( const geometry::Vector& delta );
+
     sf::Color
-    CalcLightsLumacy( const geometry::Vector& point, const geometry::Vector& normal );
+    CalcLights( const geometry::Vector& point,
+                const geometry::Vector& normal,
+                const sf::Color&        color );
 
     sf::Color
     CalcPixelColor( uint row, uint col );
@@ -50,7 +60,7 @@ class Renderer {
     uint width_;
     uint height_;
 
-    const sf::Color backgorund_color_;
+    const sf::Color background_color_;
 };
 
 } // namespace render
